@@ -10,7 +10,7 @@ def load() :
     
     return dataset
 
-def push_dataset(dataset, key='CXR_BioXAi_Hackathon_2024') :
+def push_dataset(dataset, key='Polaire/CXR_BioXAi_Hackathon_2024') :
     dataset.push_to_hub(key)
 
 def divide_file_in_batches(filename='metadata.jsonl', batches=50):
