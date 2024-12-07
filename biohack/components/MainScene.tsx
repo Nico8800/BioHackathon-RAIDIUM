@@ -15,42 +15,30 @@ const MainScene = () => {
     const file = e.target.files?.[0]
     if (!file) return
     
-    // Créer URL pour l'image
+    // Créer l'URL pour l'image
     const imageUrl = URL.createObjectURL(file)
-    setSelectedImage(imageUrl)
+    setSelectedImage(imageUrl)  // ⚠️ Vérifiez que cette ligne est présente
     
     setIsLoading(true)
-    // Simuler l'analyse
-    setTimeout(() => {
-      setResult(`
-        Analyse radiologique - 07 Décembre 2024
+    try {
+        const formData = new FormData()
+        formData.append('image', file)
 
-        TECHNIQUE
-        Radiographie thoracique de face.
-        Qualité technique satisfaisante.
+        const response = await fetch('/api/analyze', {
+            method: 'POST',
+            body: formData
+        })
 
-        FINDINGS
-        • Parenchyme pulmonaire :
-          - Absence d'opacité alvéolaire ou interstitielle
-          - Pas de nodule suspect
-        
-        • Plèvre et paroi thoracique :
-          - Absence d'épanchement pleural
-          - Coupoles diaphragmatiques bien définies
-        
-        • Médiastin et hiles :
-          - Silhouette cardio-médiastinale de taille normale
-          - Configuration hilaire physiologique
-        
-        • Ossature thoracique :
-          - Pas d'anomalie osseuse visible
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.error)
 
-        CONCLUSION
-        Radiographie thoracique sans anomalie significative.
-      `)
-      setIsLoading(false)
-    }, 2000)
-  }
+        setResult(data.report)
+    } catch (error) {
+        console.error('Error:', error)
+    } finally {
+        setIsLoading(false)
+    }
+}
 
   // Si une image est sélectionnée, afficher la vue d'analyse
   if (selectedImage) {
